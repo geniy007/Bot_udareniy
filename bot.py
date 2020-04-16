@@ -1,34 +1,42 @@
 import telebot
+from telebot import types
 import requests
 import json
 import os
-from telebot import types
+import redis
 
 token = os.environ["TELEGRAM_TOKEN"]
 
 bot = telebot.TeleBot(token)
 api_url = 'https://stepik.akentev.com/api/stress'
 
-try:
-    user_data = json.load(open('db/user_data.json', 'r', encoding='utf-8'))
-except FileNotFoundError:
-    user_data = {
-        'states': {},
-        'current_question': {},
-        'first_symbol': {},
-        'win': {},
-        'lose': {}
-    }
+redis_url = os.environ.get('REDIS_URL')
+if redis_url is None:
+    try:
+        user_data = json.load(open('user_data.json', 'r', encoding='utf-8'))
+    except FileNotFoundError:
+        user_data = {
+            'states': {},
+            'current_question': {},
+            'first_symbol': {},
+            'win': {},
+            'lose': {}
+        }
+else:
+    pass  # get from redis
 
 
 def change_data(key, user_id, value):
     user_data[key][user_id] = value
-    json.dump(
-        user_data,
-        open('db/user_data.json', 'w', encoding='utf-8'),
-        indent=2,
-        ensure_ascii=False
-    )
+    if redis_url is None:
+        json.dump(
+            user_data,
+            open('user_data.json', 'w', encoding='utf-8'),
+            indent=2,
+            ensure_ascii=False
+        )
+    else:
+        pass  # send to redis
 
 
 MAIN_STATE = 'main'
