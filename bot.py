@@ -23,7 +23,18 @@ if redis_url is None:
             'lose': {}
         }
 else:
-    pass  # get from redis
+    redis_db = redis.from_url(redis_url)
+    raw_data = redis_db.get('user_data')
+    if raw_data is None:
+        user_data = {
+            'states': {},
+            'current_question': {},
+            'first_symbol': {},
+            'win': {},
+            'lose': {}
+        }
+    else:
+        user_data = json.loads(raw_data)
 
 
 def change_data(key, user_id, value):
@@ -36,7 +47,8 @@ def change_data(key, user_id, value):
             ensure_ascii=False
         )
     else:
-        pass  # send to redis
+        redis_db1 = redis.from_url(redis_url)
+        redis_db1.set('user_data', json.dumps(user_data))
 
 
 MAIN_STATE = 'main'
