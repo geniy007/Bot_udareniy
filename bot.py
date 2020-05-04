@@ -143,7 +143,7 @@ def answer_handler(message):
         user_data['win'][user_id] += 1
         change_data('states', user_id, MAIN_STATE)
     elif 'что мне делать?' in message.text.lower():
-        bot.send_message(user_id, 'Тебе надо поставить удерение в слове ' +
+        bot.send_message(user_id, 'Тебе надо поставить ударение в слове ' +
                          user_data['current_question'][user_id].lower())
     elif message.text != user_data['current_question'][user_id] and \
             message.text.lower() == \
